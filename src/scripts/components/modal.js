@@ -6,16 +6,7 @@ export function openModal(modal) {
     });
 
     document.addEventListener('keydown', closeModalByEsc);
-    modal.addEventListener('click', closeModalByOverlay);
-}
-
-export function openModalImage(item) {
-    const modalImage = document.querySelector('.popup__image');
-    const modalImageCaption = document.querySelector('.popup__caption');
-    modalImage.src = item.link;
-    modalImage.alt = item.name;
-    modalImageCaption.textContent = item.name;
-    openModal(document.querySelector('.popup_type_image'));
+    modal.addEventListener('mousedown', closeModalByOverlay);
 }
 
 export function closeModal(modal) {

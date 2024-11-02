@@ -1,8 +1,7 @@
-import { Callbacks } from 'jquery';
 import '../pages/index.css';
 import { initialCards } from "./components/cards";
 import { createCard, deleteCard } from './components/card';
-import { openModal, openModalImage, closeModal } from './components/modal';
+import { openModal, closeModal } from './components/modal';
 
 // @todo: Темплейт карточки
 const placesList = document.querySelector('.places__list');
@@ -12,8 +11,16 @@ const addButton = document.querySelector('.profile__add-button');
 const modalEdit = document.querySelector('.popup_type_edit');
 const modalAdd = document.querySelector('.popup_type_new-card');
 const modalImage = document.querySelector('.popup__image');
+const modalImagePopup = document.querySelector('.popup_type_image');
 const modalImageCaption = document.querySelector('.popup__caption');
 const closeButtons = document.querySelectorAll('.popup__close');
+
+function openModalImage(item) {
+    modalImage.src = item.link;
+    modalImage.alt = item.name;
+    modalImageCaption.textContent = item.name;
+    openModal(modalImagePopup);
+};
 
 // // @todo: Вывести карточки на страницу
 initialCards.forEach((element) => {

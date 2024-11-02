@@ -7,7 +7,7 @@ export function createCard(template, element, deleteCard, handleLike, handleImag
     cardElement.querySelector('.card__title').textContent = element.name;
 
     const deleteButton = cardElement.querySelector('.card__delete-button');
-    deleteButton.addEventListener('click', deleteCard);
+    deleteButton.addEventListener("click", (evt) => deleteCard(evt, cardElement));
 
     const likeButton = cardElement.querySelector('.card__like-button');
     likeButton.addEventListener('click', handleLike);
