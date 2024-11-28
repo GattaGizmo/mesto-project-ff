@@ -1,7 +1,8 @@
 import '../pages/index.css';
-import { initialCards } from "./components/cards";
-import { createCard, deleteCard } from './components/card';
-import { openModal, closeModal } from './components/modal';
+import { createCard } from './components/card.js';
+import { openModal, closeModal, openDeletePopup } from './components/modal.js';
+import { enableValidation, clearValidation } from './components/validation.js';
+import { getUserInfo, getCards, editUserInfo, addNewCard, deleteCardById, addLikeById, removeLikeById } from './components/api.js'
 
 // @todo: Темплейт карточки
 const placesList = document.querySelector('.places__list');
@@ -14,6 +15,24 @@ const modalImage = document.querySelector('.popup__image');
 const modalImagePopup = document.querySelector('.popup_type_image');
 const modalImageCaption = document.querySelector('.popup__caption');
 const closeButtons = document.querySelectorAll('.popup__close');
+const addForm = document.forms['new-place'];
+const editForm = document.forms['edit-profile'];
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+// let myID = '';
+// const userName = editForm.name;
+// const userDescription = editForm.description;
+
+
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+}
 
 function openModalImage(item) {
     modalImage.src = item.link;
@@ -22,11 +41,28 @@ function openModalImage(item) {
     openModal(modalImagePopup);
 };
 
+const promises = [getUserInfo(), getCards()];
+
+Promise.all(promises)
+    .then(([userData, cards]) => {
+        profileTitle.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+
+        const myID = userData._id;
+        console.log('Карточки:', cards);
+
+        cards.forEach((card) => {
+            const cardElement = createCard(template, card, handleLike, openModalImage, myID, handleDelete);
+            placesList.append(cardElement);
+        });
+    })
+    .catch((err) => console.log(err));
+
 // // @todo: Вывести карточки на страницу
-initialCards.forEach((element) => {
-    const cardElement = createCard(template, element, deleteCard, handleLikeCard, openModalImage);
-    placesList.append(cardElement);
-});
+// initialCards.forEach((element) => {
+//     const cardElement = createCard(template, element, deleteCard, handleLikeCard, openModalImage);
+//     placesList.append(cardElement);
+// });
 
 // Обработчики событий для модальных окон
 closeButtons.forEach(button => {
@@ -42,17 +78,21 @@ const nameInput = modalEdit.querySelector('.popup__input_type_name');
 const jobInput = modalEdit.querySelector('.popup__input_type_description');
 
 editButton.addEventListener('click', () => {
-    nameInput.value = document.querySelector('.profile__title').textContent; 
-    jobInput.value = document.querySelector('.profile__description').textContent;
-    openModal(modalEdit);
+    const formElement = modalEdit.querySelector('.popup__form'); // Получаем форму
+    clearValidation(editForm, validationConfig);
+    openModal(modalEdit, formElement, validationConfig); // Передаем форму
 });
 
 function handleFormSubmit(evt) {
     evt.preventDefault();
-    const newProfileName = nameInput.value;
-    const newJobDescription = jobInput.value;
-    document.querySelector('.profile__title').textContent = newProfileName;
-    document.querySelector('.profile__description').textContent = newJobDescription;
+
+    editUserInfo(nameInput.value, jobInput.value)
+        .then((cardInfo) => {
+            const newProfileName = nameInput.value;
+            const newJobDescription = jobInput.value;
+            document.querySelector('.profile__title').textContent = newProfileName;
+            document.querySelector('.profile__description').textContent = newJobDescription;
+        })
     closeModal(modalEdit)
 };
 
@@ -63,28 +103,84 @@ const modalAddForm = modalAdd.querySelector('.popup__form');
 const placeNameInput = modalAdd.querySelector('.popup__input_type_card-name');
 const placeLinkInput = modalAdd.querySelector('.popup__input_type_url');
 
-addButton.addEventListener('click', () => openModal(modalAdd));
+addButton.addEventListener('click', () => {
+    const formElement = modalAdd.querySelector('.popup__form');
+    clearValidation(addForm, validationConfig);
+    openModal(modalAdd, formElement, validationConfig);
+});
 
 function handleAddCardSubmit(evt) {
     evt.preventDefault();
-    const newCard = {
-        name: placeNameInput.value,
-        link: placeLinkInput.value,
-    };
-    
-    const cardElement = createCard(template, newCard, deleteCard, handleLikeCard, openModalImage);
-    placesList.prepend(cardElement);
 
-    placeNameInput.value = '';
-    placeLinkInput.value = '';
+    const name = placeNameInput.value;
+    const link = placeLinkInput.value; 
 
-    closeModal(modalAdd);
+    addNewCard(name, link)
+        .then(newCardData => {
+            const newCard = {
+                name: newCardData.name,
+                link: newCardData.link,
+                owner: newCardData.owner,
+                _id: newCardData._id,
+                likes: newCardData.likes
+            };
+
+            const myID = newCard.owner._id;
+            const cardElement = createCard(template, newCard, handleLike, openModalImage, myID);
+            placesList.prepend(cardElement);
+
+            placeNameInput.value = '';
+            placeLinkInput.value = '';
+
+            closeModal(modalAdd);
+        })
+        .catch((err) => console.log(err)); // Обработка ошибок
 }
+
 
 modalAddForm.addEventListener('submit', handleAddCardSubmit);
 
 // Функция лайка карточки
-function handleLikeCard(evt, cardElement) {
-    const likeButton = evt.target.closest('.card__like-button'); 
-    likeButton.classList.toggle('card__like-button_is-active');
+function handleLike(evt, cardElement, cardInfo, likeCount, myID) {
+    const isLiked = cardInfo.likes.some(like => like._id === myID);
+    
+    if (isLiked) {
+        // Убираем лайк
+        removeLikeById(cardInfo._id)
+            .then(updatedCard => {
+                likeCount.textContent = updatedCard.likes.length;
+                evt.target.classList.remove("card__like-button_is-active");
+            })
+            .catch(err => console.log(err));
+    } else {
+        // Добавляем лайк
+        addLikeById(cardInfo._id)
+            .then(updatedCard => {
+                likeCount.textContent = updatedCard.likes.length;
+                evt.target.classList.add("card__like-button_is-active");
+            })
+            .catch(err => console.log(err));
+    }
 }
+
+function handleDelete(cardId) {
+    openDeletePopup(cardId);  // Открываем попап подтверждения удаления
+}
+
+export function confirmDelete(cardId) {
+    deleteCardById(cardId)
+        .then(() => {
+            const cardElement = document.querySelector(`[data-id="${cardId}"]`);
+            if (cardElement) {
+                cardElement.remove();
+            }
+            closeDeletePopup(); // Закрываем попап
+        })
+        .catch((error) => {
+            console.error('Ошибка при удалении карточки:', error);
+            closeDeletePopup(); // Закрываем попап в случае ошибки
+        });
+}
+
+enableValidation(validationConfig);
+
