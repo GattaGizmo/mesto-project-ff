@@ -7,6 +7,13 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  background-image: url(../../../images/avatar.jpg);
+}
+
+.profile__image:hover .profile__edit-avatar {
+  background-color: rgba(0, 0, 0, 0.8);
+  transition: 0.2s;
+  opacity: 1;
 }
 
 @media screen and (max-width: 740px) {

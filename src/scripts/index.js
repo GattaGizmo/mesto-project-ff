@@ -2,7 +2,7 @@ import '../pages/index.css';
 import { createCard, likeCard } from './components/card.js';
 import { openModal, closeModal, openDeletePopup } from './components/modal.js';
 import { enableValidation, clearValidation } from './components/validation.js';
-import { getUserInfo, getCards, editUserInfo, addNewCard, deleteCardById, addLikeById, removeLikeById } from './components/api.js'
+import { getUserInfo, getCards, editUserInfo, addNewCard, deleteCardById, addLikeById, removeLikeById, editAvatar } from './components/api.js'
 
 // @todo: Темплейт карточки
 const placesList = document.querySelector('.places__list');
@@ -19,6 +19,12 @@ const addForm = document.forms['new-place'];
 const editForm = document.forms['edit-profile'];
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+const profileImage = document.querySelector(".profile__image");
+
+const formElementAvatar = document.forms['new-avatar'];
+const avatarInput = document.querySelector('.popup__input-avatar');
+const popupAvatarOpen = document.querySelector('.profile__edit-avatar');
+const popupAvatar = document.querySelector('.popup_new-avatar');
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -42,6 +48,7 @@ Promise.all(promises)
     .then(([userData, cards]) => {
         profileTitle.textContent = userData.name;
         profileDescription.textContent = userData.about;
+        profileImage.style = `background-image: url('${userData.avatar}')`;
 
         const myID = userData._id;
         console.log('Карточки:', cards);
@@ -148,6 +155,39 @@ export function confirmDelete(cardId) {
             }
             closeDeletePopup();
         });
+}
+
+const handleAvatarSubmit = (evt) => {
+    evt.preventDefault();
+
+    renderLoading(true, formElementAvatar);
+
+    editAvatar(avatarInput.value)
+        .then((data) => {
+            profileImage.style.backgroundImage = `url(${data.avatar})`;
+        })
+        .catch((err) => console.log(err))
+        .finally(() => renderLoading(false, formElementAvatar));
+
+    closeModal(popupAvatar);
+
+    formElementAvatar.reset();
+}
+
+popupAvatarOpen.addEventListener('click', () => openModal(popupAvatar));
+formElementAvatar.addEventListener('submit', handleAvatarSubmit);
+
+popupAvatarOpen.addEventListener('click', () => {
+    formElementAvatar.reset();
+    clearValidation(formElementAvatar, validationConfig);
+    openModal(popupAvatar);
+});
+
+formElementAvatar.addEventListener('submit', handleAvatarSubmit);
+
+function renderLoading(isLoading, form) {
+    const button = form.querySelector(".popup__button");
+    button.textContent = isLoading ? "Cохранение..." : "Сохранить";
 }
 
 enableValidation(validationConfig);

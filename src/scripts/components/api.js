@@ -63,3 +63,13 @@ export function removeLikeById(cardId) {
         headers: apiConfig.headers,
     }).then(resp => resp.json());
 }
+
+export const editAvatar = (link) => {
+    return fetch(`${apiConfig.baseURL}users/me/avatar`, {
+    method: "PATCH",
+    headers: apiConfig.headers,
+    body: JSON.stringify({
+        avatar: link
+    })
+}).then(resp => resp.json())
+}

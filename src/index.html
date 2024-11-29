@@ -14,7 +14,9 @@
   </header>
   <main class="content">
     <section class="profile page__section">
-      <div class="profile__image" style="background-image: url(<%=require('./images/avatar.jpg')%>);"></div>
+      <div class="profile__image">
+        <button class="profile__edit-avatar" type="button"></button>
+      </div>
       <div class="profile__info">
         <h1 class="profile__title">Жак-Ив Кусто</h1>
         <button class="profile__edit-button" type="button"></button>
@@ -108,12 +110,32 @@
       <form class="popup__form" name="delete" novalidate>
         <button
           type="submit"
-          class="button popup__button popup__button_submite-delete"
-        >
+          class="button popup__button popup__button_submite-delete">
           Да
-        </button>
+      </button>
       </form>
   </div>
+</div>
+<div class="popup popup_new-avatar">
+  <div class="popup__content popup__content_content_avatar">
+    <button type="button" class="popup__close"></button>
+    <h3 class="popup__title">Обновить аватар</h3>
+    <form class="popup__form" name="new-avatar" novalidate>
+      <label class="form_field">
+        <input
+          type="url"
+          name="link-avatar"
+          class="popup__input popup__input-avatar"
+          id="link-avatar-input"
+          placeholder="Ссылка на аватарку"
+          required
+        />
+        <span class="form__input-error avatar-input-error"></span>
+      </label>
+      <button type="submit" class="button popup__button">Сохранить</button>
+    </form>
+  </div>
+</div>
 </div>
 
 <template id="card-template">
