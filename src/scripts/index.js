@@ -51,7 +51,6 @@ Promise.all(promises)
         profileImage.style = `background-image: url('${userData.avatar}')`;
 
         const myID = userData._id;
-        console.log('Карточки:', cards);
 
         cards.forEach((card) => {
             const cardElement = createCard(template, card, handleLike, openModalImage, myID, handleDelete);
@@ -82,14 +81,21 @@ editButton.addEventListener('click', () => {
 function handleFormSubmit(evt) {
     evt.preventDefault();
 
+    renderLoading(true, formElement);
+
     editUserInfo(nameInput.value, jobInput.value)
-        .then((cardInfo) => {
-            const newProfileName = nameInput.value;
-            const newJobDescription = jobInput.value;
-            document.querySelector('.profile__title').textContent = newProfileName;
-            document.querySelector('.profile__description').textContent = newJobDescription;
-        })
-    closeModal(modalEdit)
+    .then((cardInfo) => {
+        const newProfileName = nameInput.value;
+        const newJobDescription = jobInput.value;
+        document.querySelector('.profile__title').textContent = newProfileName;
+        document.querySelector('.profile__description').textContent = newJobDescription;
+    })
+    .catch((err) => {
+        console.log(err);
+    })
+    .finally(() => renderLoading(false, formElement));
+
+closeModal(modalEdit);
 };
 
 formElement.addEventListener('submit', handleFormSubmit); 

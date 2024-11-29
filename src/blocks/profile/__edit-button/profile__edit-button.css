@@ -2,7 +2,7 @@
   width: 26px;
   height: 26px;
   background: transparent url('../../../images/edit-icon.svg') center no-repeat;
-  background-size: 100%;
+  background-size: 10px 10px;
   border: 1px solid #fff;
   grid-area: button;
   align-self: center;
