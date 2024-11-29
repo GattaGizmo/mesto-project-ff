@@ -57,14 +57,14 @@ let cardIdToDelete = null;
 export function openDeletePopup(cardId) {
     const popup = document.querySelector('.popup_type_delete');
 
-    cardIdToDelete = cardId;  // Сохраняем ID карточки для удаления
+    cardIdToDelete = cardId;
     popup.classList.add('popup_is-opened');
 
     const confirmButton = document.querySelector('.popup__button.popup__button_submite-delete');
 if (confirmButton) {
     confirmButton.addEventListener('click', (event) => {
-        event.preventDefault();  // Отменяем стандартное действие формы
-        confirmDelete(cardIdToDelete);         // Подтверждаем удаление
+        event.preventDefault();
+        confirmDelete(cardIdToDelete);
     });
 }
 }
@@ -82,10 +82,6 @@ export function confirmDelete(cardId) {
             if (cardElement) {
                 cardElement.remove();
             }
-            closeDeletePopup();  // Закрываем попап после успешного удаления
-        })
-        .catch((error) => {
-            console.error('Ошибка при удалении карточки:', error);
-            closeDeletePopup();  // Закрываем попап в случае ошибки
+            closeDeletePopup();
         });
 }
