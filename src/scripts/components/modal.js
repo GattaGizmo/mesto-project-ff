@@ -56,17 +56,17 @@ let cardIdToDelete = null;
 // Функция для открытия попапа удаления
 export function openDeletePopup(cardId) {
     const popup = document.querySelector('.popup_type_delete');
+    const confirmButton = popup.querySelector('.popup__button.popup__button_submite-delete');
 
     cardIdToDelete = cardId;
     popup.classList.add('popup_is-opened');
 
-    const confirmButton = document.querySelector('.popup__button.popup__button_submite-delete');
-if (confirmButton) {
-    confirmButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        confirmDelete(cardIdToDelete);
-    });
-}
+    if (confirmButton) {
+        confirmButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            confirmDelete(cardIdToDelete);
+        });
+    }
 }
 
 export function closeDeletePopup() {
