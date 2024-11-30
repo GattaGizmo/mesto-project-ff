@@ -1,4 +1,3 @@
-// Функция для активации валидации на формах
 const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
     const {inputErrorClass, errorClass} = validationConfig;
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
@@ -92,7 +91,6 @@ export const clearValidation = (formElement, validationConfig) => {
 export function resetFormValidation(form, validationConfig) {
     const { inputSelector, inputErrorClass, errorClass, submitButtonSelector, disabledButtonClass } = validationConfig;
 
-    // Убираем ошибки валидации
     const inputList = Array.from(form.querySelectorAll(inputSelector));
     inputList.forEach((inputElement) => {
         const errorElement = form.querySelector(`.${inputElement.id}-error`);
@@ -101,7 +99,6 @@ export function resetFormValidation(form, validationConfig) {
         errorElement.textContent = '';
     });
 
-    // Сбрасываем состояние кнопки отправки
     const submitButton = form.querySelector(submitButtonSelector);
     submitButton.disabled = true;
     submitButton.classList.add(disabledButtonClass);

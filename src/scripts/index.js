@@ -35,6 +35,9 @@ const avatarInput = document.querySelector('.popup__input-avatar');
 const popupAvatarOpen = document.querySelector('.profile__edit-avatar');
 const popupAvatar = document.querySelector('.popup_new-avatar');
 
+const modalDelete = document.querySelector(".popup_type_delete");
+const formDelete = document.forms["delete"];
+
 const validationConfig = {
     formSelector: '.popup__form',
     inputSelector: '.popup__input',
@@ -49,7 +52,7 @@ function openModalImage(item) {
     modalImage.alt = item.name;
     modalImageCaption.textContent = item.name;
     openModal(modalImagePopup);
-};
+}
 
 const promises = [getUserInfo(), getCards()];
 
@@ -73,13 +76,13 @@ closeButtons.forEach(button => {
         const modal = button.closest('.popup');
         closeModal(modal);
     });
-});
+})
 
 editButton.addEventListener('click', () => {
     const formElement = modalEdit.querySelector('.popup__form');
     clearValidation(editForm, validationConfig);
     openModal(modalEdit, formElement, validationConfig);
-});
+})
 
 function handleFormSubmit(evt) {
     evt.preventDefault();
@@ -100,7 +103,7 @@ function handleFormSubmit(evt) {
         console.log(err);
     })
     .finally(() => renderLoading(btn, ""));
-};
+}
 
 formElement.addEventListener('submit', handleFormSubmit); 
 
@@ -108,7 +111,7 @@ addButton.addEventListener('click', () => {
     const formElement = modalAdd.querySelector('.popup__form');
     clearValidation(addForm, validationConfig);
     openModal(modalAdd, formElement, validationConfig);
-});
+})
 
 function handleAddCardSubmit(evt) {
     evt.preventDefault();
@@ -152,17 +155,6 @@ function handleLike(evt, cardElement, cardInfo, likeCount, profileID) {
     likeCard(cardInfo, likeButton, likeCount);
 }
 
-export function confirmDelete(cardId) {
-    deleteCardById(cardId)
-        .then(() => {
-            const cardElement = document.querySelector(`[data-id="${cardId}"]`);
-            if (cardElement) {
-                cardElement.remove();
-            }
-            closeDeletePopup();
-        });
-}
-
 const handleAvatarSubmit = (evt) => {
     evt.preventDefault();
 
@@ -180,7 +172,7 @@ const handleAvatarSubmit = (evt) => {
     closeModal(popupAvatar);
 
     formElementAvatar.reset();
-};
+}
 
 popupAvatarOpen.addEventListener('click', () => openModal(popupAvatar));
 formElementAvatar.addEventListener('submit', handleAvatarSubmit);
@@ -189,7 +181,7 @@ popupAvatarOpen.addEventListener('click', () => {
     formElementAvatar.reset();
     clearValidation(formElementAvatar, validationConfig);
     openModal(popupAvatar);
-});
+})
 
 formElementAvatar.addEventListener('submit', handleAvatarSubmit);
 
@@ -203,14 +195,31 @@ function renderLoading(btn, text, originalText = '') {
     }
 }
 
+let cardDataToDelete = {};
+
 function handleDelete(cardId, cardElement) {
-    deleteCardById(cardId)
-        .then((res) => {
-            cardElement.remove();
+    cardDataToDelete = {
+        id: cardId,
+        cardElement,
+    };
+    openModal(modalDelete);
+}
+
+function confirmDelete(evt) {
+    evt.preventDefault();
+
+    if (!cardDataToDelete.cardElement) return;
+
+    deleteCardById(cardDataToDelete.id)
+        .then(() => {
+            cardDataToDelete.cardElement.remove();
+            closeModal(modalDelete);
+            cardDataToDelete = {};
         })
-        .catch(err => {
-            console.log(err)
+        .catch((err) => { console.log(err)
         });
 }
+
+formDelete.addEventListener("submit", confirmDelete);
 
 enableValidation(validationConfig);
