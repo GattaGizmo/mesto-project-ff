@@ -27,12 +27,9 @@ export function createCard(template, cardInfo, handleLike, handleImageClick, pro
     likeCount.textContent = cardInfo.likes.length;
 
     if (cardInfo.owner._id === profileID) {
-        deleteButton.classList.remove('card__delete-button-hidden');
         deleteButton.addEventListener("click", () => {
-            if (handleDelete) {
-                handleDelete(cardInfo._id, cardElement);
-            }
-            });
+            handleDelete(cardInfo._id, cardElement);
+        });
     } else {
         deleteButton.classList.add('card__delete-button-hidden');
     }
@@ -57,12 +54,4 @@ const handleLike = (likeButton, cardInfo, likeCount) => {
             likeCount.textContent = res.likes.length;
             likeButton.classList.toggle('card__like-button-is-active')
         })
-}
-
-export function handleDelete(cardId, cardElement) {
-    deleteCardById(cardId)
-        .then(() => {
-            cardElement.remove();
-        })
-        .catch(err => console.log(err));
 }
