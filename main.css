@@ -40,6 +40,7 @@
 .popup__button_disabled{background:#ededed;color:#b8b8b8;pointer-events:none;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
 .popup__caption{color:#fff;font-size:12px;left:0;line-height:15px;margin:0;position:absolute;top:calc(100% + 10px)}
 .popup__image{display:block;max-height:100%;max-width:100%;-o-object-fit:cover;object-fit:cover}
+.popup__content_content_avatar{min-height:272px}
 .popup_type_delete{min-height:180px}
 .popup{align-items:center;background-color:rgba(0,0,0,.5);bottom:0;display:none;font-family:Inter,Arial,sans-serif;justify-content:center;left:0;position:fixed;right:0;top:0;z-index:10}
 .popup_is-animated{display:flex;opacity:0;pointer-events:none;transition:visibility 0s .6s,opacity .6s;-webkit-user-select:none;-moz-user-select:none;user-select:none;visibility:hidden}
