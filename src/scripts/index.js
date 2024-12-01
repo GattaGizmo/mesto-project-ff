@@ -18,6 +18,7 @@ const modalImageCaption = document.querySelector('.popup__caption');
 const closeButtons = document.querySelectorAll('.popup__close');
 const addForm = document.forms['new-place'];
 const editForm = document.forms['edit-profile'];
+
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector(".profile__image");
@@ -79,6 +80,8 @@ closeButtons.forEach(button => {
 })
 
 editButton.addEventListener('click', () => {
+    nameInput.value = profileTitle.textContent;
+    jobInput.value = profileDescription.textContent;
     const formElement = modalEdit.querySelector('.popup__form');
     clearValidation(editForm, validationConfig);
     openModal(modalEdit, formElement, validationConfig);
@@ -93,8 +96,8 @@ function handleFormSubmit(evt) {
 
     editUserInfo(nameInput.value, jobInput.value)
     .then((cardInfo) => {
-        const newProfileName = nameInput.value;
-        const newJobDescription = jobInput.value;
+        const newProfileName = cardInfo.name;
+        const newJobDescription = cardInfo.about;
         document.querySelector('.profile__title').textContent = newProfileName;
         document.querySelector('.profile__description').textContent = newJobDescription;
         closeModal(modalEdit);
@@ -185,14 +188,8 @@ popupAvatarOpen.addEventListener('click', () => {
 
 formElementAvatar.addEventListener('submit', handleAvatarSubmit);
 
-function renderLoading(btn, text, originalText = '') {
-    if (btn) {
-        if (text) {
-            btn.textContent = text; 
-        } else if (originalText) {
-            btn.textContent = originalText;
-        }
-    }
+function renderLoading(btn, isLoading) {
+    btn.textContent = isLoading ? 'Сохранение...' : 'Сохранить';
 }
 
 let cardDataToDelete = {};

@@ -9,6 +9,8 @@ export function likeCard(cardInfo, likeButton, likeCount) {
         .then((updatedCard) => {
             likeCount.textContent = updatedCard.likes.length;
             likeButton.classList.toggle("card__like-button_is-active");
+        })
+        .catch((err) => { console.log(err)
         });
 }
 
@@ -45,13 +47,4 @@ export function createCard(template, cardInfo, handleLike, handleImageClick, pro
     }
 
     return cardElement;
-}
-
-const handleLike = (likeButton, cardInfo, likeCount) => {
-    const likeMethod = likeButton.classList.contains('card__like-button-is-active') ? removeLikeById : addLikeById;
-    likeMethod(cardInfo._id)
-        .then((res) => {
-            likeCount.textContent = res.likes.length;
-            likeButton.classList.toggle('card__like-button-is-active')
-        })
 }

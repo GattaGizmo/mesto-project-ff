@@ -1,13 +1,4 @@
-import { toggleButtonState, resetFormValidation } from './validation.js';
-
-export function openModal(modal, form, config, userData) {
-    if (form) {
-        resetFormValidation(form, config);
-
-        const submitButton = form.querySelector(config.submitButtonSelector);
-        toggleButtonState(Array.from(form.querySelectorAll(config.inputSelector)), submitButton, config);
-    }
-
+export function openModal(modal) {
     modal.classList.add('popup_is-opened');
     modal.style.visibility = 'visible';
     requestAnimationFrame(() => {
@@ -19,11 +10,6 @@ export function openModal(modal, form, config, userData) {
 }
 
 export function closeModal(modal) {
-    const form = modal.querySelector('form');
-    if (form) {
-        form.reset();
-    }
-
     modal.style.opacity = '0';
     setTimeout(() => {
         modal.style.visibility = 'hidden';

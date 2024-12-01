@@ -32,19 +32,20 @@ const isValid = (formElement, inputElement, validationConfig) => {
 }
 
 const hasInvalidInput = (inputList) => {
-    return inputList.some((inputElement) => {
-        return !inputElement.validity.valid;
-    })
+    return inputList.some((inputElement) => 
+        !inputElement.validity.valid);
 }
 
-export function toggleButtonState(inputList, buttonElement, validationConfig) {
+const disableSubmitButton = (buttonElement, inactiveButtonClass) => {
+    buttonElement.classList.add(inactiveButtonClass);
+    buttonElement.disabled = true;
+}
+
+function toggleButtonState(inputList, buttonElement, validationConfig) {
     const {inactiveButtonClass} = validationConfig;
 
-    inputList = Array.from(inputList);
-
     if (hasInvalidInput(inputList)) {
-        buttonElement.disabled = true; 
-        buttonElement.classList.add(inactiveButtonClass);
+        disableSubmitButton(buttonElement, inactiveButtonClass);
     } else {
         buttonElement.disabled = false;
         buttonElement.classList.remove(inactiveButtonClass);
@@ -62,7 +63,7 @@ const setEventListeners = (formElement, validationConfig) => {
         inputElement.addEventListener('input', () => {
             isValid(formElement, inputElement, validationConfig);
 
-            toggleButtonState(formElement, buttonElement, validationConfig);
+            toggleButtonState(inputList, buttonElement, validationConfig);
         });
     });
 }
@@ -85,21 +86,5 @@ export const clearValidation = (formElement, validationConfig) => {
         hideInputError(formElement, input, validationConfig)
     })
 
-    buttonElement.classList.add(inactiveButtonClass);
-}
-
-export function resetFormValidation(form, validationConfig) {
-    const { inputSelector, inputErrorClass, errorClass, submitButtonSelector, disabledButtonClass } = validationConfig;
-
-    const inputList = Array.from(form.querySelectorAll(inputSelector));
-    inputList.forEach((inputElement) => {
-        const errorElement = form.querySelector(`.${inputElement.id}-error`);
-        inputElement.classList.remove(inputErrorClass);
-        errorElement.classList.remove(errorClass);
-        errorElement.textContent = '';
-    });
-
-    const submitButton = form.querySelector(submitButtonSelector);
-    submitButton.disabled = true;
-    submitButton.classList.add(disabledButtonClass);
+    disableSubmitButton(buttonElement, inactiveButtonClass);
 }
